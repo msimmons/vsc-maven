@@ -7,6 +7,9 @@
   "engines": {
     "vscode": "^1.30.0"
   },
+  "repository": {
+    "url": "https://github.com/msimmons/vsc-maven"
+  },
   "categories": [
     "Other"
   ],
