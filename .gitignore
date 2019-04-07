@@ -1,0 +1,10 @@
+out
+node_modules
+*.iml
+build
+.gradle
+.idea
+.vscode
+dist
+vsc-extension-quickstart.md
+*.vsix

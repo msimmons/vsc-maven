@@ -1,0 +1,30 @@
+dependencies {
+    compile "org.apache.maven:maven-embedder:3.6.0"
+    compile "org.apache.maven:maven-compat:3.6.0"
+    compile "org.apache.maven:maven-core:3.6.0"
+    compile "org.eclipse.aether:aether-connector-basic:1.1.0"
+    compile "org.eclipse.aether:aether-transport-wagon:1.1.0"
+    compile "org.apache.maven.wagon:wagon-http:3.3.1"
+    compile "org.apache.maven.wagon:wagon-provider-api:3.3.1"
+    compile "org.apache.maven.wagon:wagon-http-lightweight:3.3.1"
+
+    compileOnly "io.vertx:vertx-core:$vertx_version"
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+}
+
+task deploy(type: Copy, dependsOn: ['build']) {
+    from ("${project.buildDir}/libs") {
+        include jar.archiveName
+        rename jar.archiveName, 'vsc-maven.jar'
+    }
+    into "${project.rootDir}/out"
+}
+
+task deployJars(type: Copy) {
+    from (configurations.compile)
+    into "${project.rootDir}/out"
+}
+
+test {
+    systemProperty 'test.rootDir', project.rootDir
+}

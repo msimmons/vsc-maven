@@ -1,0 +1,3 @@
+rootProject.name = 'vsc-maven'
+include 'server'
+

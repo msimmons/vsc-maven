@@ -1,0 +1,73 @@
+{
+  "name": "vsc-maven",
+  "displayName": "VSC Maven",
+  "description": "Maven integration for vscode",
+  "version": "0.1.0",
+  "publisher": "contrapt",
+  "engines": {
+    "vscode": "^1.30.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:pom.xml"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "views": {},
+    "commands": [
+      {
+        "title": "Maven: Refresh",
+        "command": "maven.refresh"
+      },
+      {
+        "title": "Maven: Run Task",
+        "command": "maven.run-task"
+      },
+      {
+        "title": "Maven: Compile",
+        "command": "maven.compile"
+      }
+    ],
+    "menus": {},
+    "configuration": {
+      "title": "Maven Configuration"
+    },
+    "problemMatchers": [
+      {
+        "name": "maven",
+        "pattern": {
+          "regexp": "^\\[(.*)]\\s+(.*):\\[\\d+,\\d+]\\s+(.*)$",
+          "severity": 1,
+          "file": 2,
+          "line": 3,
+          "column": 4,
+          "message": 5
+        },
+        "source": "maven",
+        "fileLocation": "absolute"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile; ./gradlew build deploy",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run compile && node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.48",
+    "@types/node": "^8.10.18",
+    "mocha": "^3.5.0",
+    "typescript": "^2.9.1",
+    "vscode": "^1.1.18"
+  },
+  "dependencies": {
+    "node-uuid": "^1.4.8"
+  },
+  "extensionDependencies": [
+    "contrapt.jvmcode"
+  ]
+}

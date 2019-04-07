@@ -1,0 +1,21 @@
+allprojects {
+    apply plugin: 'java'
+
+    group = 'net.contrapt'
+    version = '1.0.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:1.1.2-5"
+        runtime "ch.qos.logback:logback-classic:1.2.3"
+        testCompile "junit:junit:4.12"
+    }
+
+}
+
+wrapper {
+    gradleVersion = '3.5'
+}

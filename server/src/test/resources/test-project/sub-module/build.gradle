@@ -1,0 +1,7 @@
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly "io.vertx:vertx-core:3.4.1"
+}
