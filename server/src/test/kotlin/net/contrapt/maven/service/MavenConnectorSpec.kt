@@ -1,7 +1,6 @@
 package net.contrapt.maven.service
 
 import org.apache.maven.cli.MavenConnector
-import org.apache.maven.lifecycle.LifecycleExecutionException
 import org.apache.maven.project.ProjectBuildingException
 import org.junit.Test
 
@@ -14,8 +13,6 @@ class MavenConnectorSpec {
 
     val projectDir = "${rootDir}/server/src/test/resources/test-project"
     val badProjectDir = "${rootDir}/server/src/test/resources/bad-project"
-    //val projectDir = "/home/mark/work/sandbox"
-    val connector = MavenConnector(projectDir)
 
     @Test
     fun testConnect() {
@@ -44,16 +41,4 @@ class MavenConnectorSpec {
         //projectbuildingexception
     }
 
-    @Test
-    fun testCompileError() {
-        val connector = MavenConnector(projectDir)
-        val result = connector.compile()
-        result.exceptions.forEach {
-            when (it) {
-                is ProjectBuildingException -> it.results.forEach { it.problems.forEach { println("p ${it}") } }
-                is LifecycleExecutionException -> println("e ${it.cause}")
-            }
-        }
-        //lifecycle.cause compilationfailureexception
-    }
 }

@@ -27,10 +27,6 @@
       {
         "title": "Maven: Run Task",
         "command": "maven.run-task"
-      },
-      {
-        "title": "Maven: Compile",
-        "command": "maven.compile"
       }
     ],
     "menus": {},

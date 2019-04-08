@@ -89,24 +89,6 @@ class MavenVerticle : AbstractVerticle() {
             })
         }
 
-        /**
-         * Compile the project and return results (errors and warnings)
-         */
-        vertx.eventBus().consumer<JsonObject>("maven.compile") { message ->
-            vertx.executeBlocking(Handler<Future<JsonObject>> { future ->
-                try {
-                    val result = mavenService.compile()
-                    future.complete(JsonObject.mapFrom(result))
-                } catch (e: Exception) {
-                    logger.error("Compiling project", e)
-                    future.fail(e)
-                }
-            }, false, Handler<AsyncResult<JsonObject>> { ar ->
-                if (ar.failed()) {
-                    message.fail(1, ar.cause().toString())
-                } else message.reply(ar.result())
-            })
-        }
     }
 
 }

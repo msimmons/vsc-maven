@@ -80,13 +80,6 @@ export function activate(context: vscode.ExtensionContext) {
         })
     }))
 
-    context.subscriptions.push(vscode.commands.registerCommand('maven.compile', () => {
-        vscode.window.withProgress({ location: ProgressLocation.Window, title: 'Compile' }, (progress) => {
-            return mavenService.compile(progress).catch((error) => {
-                vscode.window.showErrorMessage('Error compiling: ' + error.message)
-            })
-        })
-    }))
 }
 
 // this method is called when your extension is deactivated

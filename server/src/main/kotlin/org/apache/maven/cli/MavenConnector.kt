@@ -83,10 +83,6 @@ class MavenConnector(val workingDirectory: String) : ExecutionListener, Transfer
         return execute(arrayOf("dependency:sources"))
     }
 
-    fun compile() : MavenExecutionResult {
-        return execute(arrayOf("package"))
-    }
-
     fun runTasks(tasks: Array<String>) : MavenExecutionResult {
         return execute(tasks)
     }

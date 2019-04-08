@@ -11,7 +11,7 @@ class MavenServiceSpec {
     var rootDir = System.getProperty("test.rootDir") ?: "/home/mark/work/vsc-maven"
 
     val projectDir = "${rootDir}/server/src/test/resources/test-project"
-    //val projectDir = "/home/mark/work/sandbox"
+
     val service = MavenService(projectDir, rootDir)
 
     @Test
@@ -21,12 +21,6 @@ class MavenServiceSpec {
         deps.size shouldBe 2
         deps.filter { it.transitive }.size shouldBe 1
         val tasks = service.getTasks()
-    }
-
-    @Test
-    fun testCompile() {
-        val result = service.compile()
-        result.messages.size shouldBe 2
     }
 
 }

@@ -27,11 +27,6 @@ class MavenService(val projectDir: String, val extensionDir: String) {
         if (result.hasExceptions()) throw result.exceptions.first()
     }
 
-    fun compile() : CompileResult {
-        val compresult = connector.compile()
-        return processCompilationResult(compresult)
-    }
-
     fun getTasks() : Collection<String> {
         val tasks = mutableSetOf<String>()
         result.topologicallySortedProjects.forEach { project ->

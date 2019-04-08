@@ -13,10 +13,10 @@ export class MavenService {
     problems: vscode.DiagnosticCollection
     watcher: vscode.FileSystemWatcher
 
-    private triggerCompile = (e: vscode.Uri) => {
+    private triggerRefresh = (e: vscode.Uri) => {
         // TODO debounce
-        vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Compile' }, (progress) => {
-            return this.compile(progress)
+        vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title: 'Refresh' }, (progress) => {
+            return this.refresh(progress)
         })
     }
 
@@ -26,10 +26,10 @@ export class MavenService {
         this.jvmcode = jvmcode
         this.problems = vscode.languages.createDiagnosticCollection("vsc-maven")
         // TODO extensions are configurable
-        let pattern = vscode.workspace.rootPath+"/**/*.{java,kt,groovy}"
+        let pattern = vscode.workspace.rootPath+"/**/pom.xml"
         this.watcher = vscode.workspace.createFileSystemWatcher(pattern)
-        this.watcher.onDidChange(this.triggerCompile)
-        this.watcher.onDidDelete(this.triggerCompile)
+        this.watcher.onDidChange(this.triggerRefresh)
+        this.watcher.onDidDelete(this.triggerRefresh)
     }
 
     public async connect(progress: vscode.Progress<{message?: string}>) : Promise<any> {
@@ -54,20 +54,6 @@ export class MavenService {
         progress.report({message: 'Starting '+task})
         let reply = await this.jvmcode.send('maven.run-task', { task: task })
         return reply.body
-    }
-
-    public async compile(progress: vscode.Progress<{message?: string}>) {
-        progress.report({message: 'Maven: Compiling'})
-        this.problems.clear()
-        let reply = await this.jvmcode.send('maven.compile', {})
-        reply.body.messages.forEach(problem => {
-            let uri = vscode.Uri.file(problem.file)
-            let existing = this.problems.get(uri)
-            existing = existing ? existing : []
-            let range = new vscode.Range(problem.line-1, problem.column-1, problem.line-1, problem.column-1)
-            let diag = new vscode.Diagnostic(range, problem.message, vscode.DiagnosticSeverity.Error)
-            this.problems.set(uri, existing.concat(diag))
-        });
     }
 
 }
