@@ -2,9 +2,9 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { StatusBarItem, Uri, ProgressLocation } from 'vscode'
+import { ProgressLocation } from 'vscode'
 import { MavenService } from './maven_service'
-import { existsSync, readdirSync } from 'fs';
+import { readdirSync } from 'fs';
 
 let jvmcode
 let mavenService: MavenService

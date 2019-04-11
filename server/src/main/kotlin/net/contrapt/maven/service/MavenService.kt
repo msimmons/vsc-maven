@@ -1,12 +1,9 @@
 package net.contrapt.maven.service
 
 import net.contrapt.maven.model.ClasspathData
-import net.contrapt.maven.model.CompileMessage
-import net.contrapt.maven.model.CompileResult
 import net.contrapt.maven.model.DependencyData
 import org.apache.maven.cli.MavenConnector
 import org.apache.maven.execution.MavenExecutionResult
-import org.apache.maven.plugin.MojoFailureException
 import java.io.File
 
 /**
@@ -14,7 +11,6 @@ import java.io.File
  */
 class MavenService(val projectDir: String, val extensionDir: String) {
 
-    private val ERROR_PATTERN = "^(.*):\\[(\\d+),(\\d+)\\]\\s+(.*)\$".toRegex()
     val connector = MavenConnector(projectDir)
     lateinit var result : MavenExecutionResult
         private set
@@ -92,38 +88,6 @@ class MavenService(val projectDir: String, val extensionDir: String) {
      * Run the given test class and return ?
      */
     fun runTest(className: String) {
-    }
-
-    /**
-     * Process compilation errors into appropriate information for consumption
-     */
-    private fun processCompilationResult(compresult: MavenExecutionResult) : CompileResult {
-        if (!compresult.hasExceptions()) return CompileResult()
-        val result = CompileResult()
-        compresult.exceptions.forEach {
-            when (val c = it.cause) {
-                is MojoFailureException -> result.messages.addAll(extractCompilationErrors(c.longMessage))
-            }
-        }
-        return result
-    }
-
-    /**
-     * Extract compilation errors from the long message; there can be multiple
-     */
-    private fun extractCompilationErrors(message: String) : Collection<CompileMessage> {
-        val results = mutableListOf<CompileMessage>()
-        message.split("\n").forEach {
-            val matcher = ERROR_PATTERN.toPattern().matcher(it)
-            if (matcher.matches()) {
-                val file = matcher.group(1)
-                val line = matcher.group(2).toInt()
-                val column = matcher.group(3).toInt()
-                val message = matcher.group(4)
-                results.add(CompileMessage(file, line, column, message))
-            }
-        }
-        return results
     }
 
 }
