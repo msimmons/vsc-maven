@@ -7,6 +7,7 @@ dependencies {
     compile "org.apache.maven.wagon:wagon-http:3.3.1"
     compile "org.apache.maven.wagon:wagon-provider-api:3.3.1"
     compile "org.apache.maven.wagon:wagon-http-lightweight:3.3.1"
+    compile group: "net.contrapt.jvmcode", name: "jvmcode-model", version: jvmcode_version, changing: true
 
     compileOnly "io.vertx:vertx-core:$vertx_version"
     runtime "ch.qos.logback:logback-classic:1.2.3"

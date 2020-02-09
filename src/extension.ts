@@ -44,27 +44,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     function connectMaven() {
         mavenService = new MavenService(vscode.workspace.rootPath, context.extensionPath, jvmcode)
-        vscode.window.withProgress({ location: ProgressLocation.Window, title: 'Connect to Maven' }, (progress) => {
-            return mavenService.connect(progress).then((reply) => {
-                progress.report({ message: 'Connected' })
-            })
-                .catch((error) => {
-                    progress.report({ message: 'Failed to connect' })
-                    vscode.window.showErrorMessage('Error connecting to maven: ' + error.message)
-                })
-        })
+        mavenService.connect()
     }
 
     context.subscriptions.push(vscode.commands.registerCommand('maven.refresh', () => {
-        vscode.window.withProgress({ location: ProgressLocation.Window, title: 'Refresh Maven' }, (progress) => {
-            return mavenService.refresh(progress).then((reply) => {
-                progress.report({ message: 'Refreshed' })
-            })
-                .catch((error) => {
-                    progress.report({ message: 'Failed to refresh' })
-                    vscode.window.showErrorMessage('Error refreshing maven: ' + error.message)
-                })
-        })
+        mavenService.refresh()
     }))
 
     context.subscriptions.push(vscode.commands.registerCommand('maven.run-task', () => {

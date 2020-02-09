@@ -1,6 +1,9 @@
 package net.contrapt.maven.service
 
+import io.kotlintest.matchers.beGreaterThan
+import io.kotlintest.matchers.should
 import io.kotlintest.matchers.shouldBe
+import net.contrapt.maven.model.ConnectRequest
 import org.junit.Test
 
 /**
@@ -12,15 +15,15 @@ class MavenServiceSpec {
 
     val projectDir = "${rootDir}/server/src/test/resources/test-project"
 
-    val service = MavenService(projectDir, rootDir)
+    val service = MavenService(ConnectRequest(projectDir, rootDir))
 
     @Test
     fun testRefresh() {
-        service.refresh()
-        val deps = service.getDependencies()
+        val result = service.refresh()
+        val deps = result.second.dependencySources.first().dependencies
         deps.size shouldBe 2
         deps.filter { it.transitive }.size shouldBe 1
-        val tasks = service.getTasks()
+        service.getTasks().size shouldBe 17
     }
 
 }

@@ -11,6 +11,21 @@ plugins {
     id "com.github.johnrengelman.shadow" version "4.0.3"
 }
 
+allprojects {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://repo.gradle.org/gradle/libs-releases-local/"
+        }
+        maven {
+            url "${gh_registry_uri}/jvmcode"
+            credentials {
+                username "$gh_registry_user"
+                password "$gh_registry_key"
+            }
+        }
+    }
+}
 
 subprojects {
     group 'net.contrapt'
@@ -22,13 +37,6 @@ subprojects {
     compileKotlin {
         kotlinOptions {
             jvmTarget = '1.8'
-        }
-    }
-
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://repo.gradle.org/gradle/libs-releases-local/"
         }
     }
 

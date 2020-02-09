@@ -1,31 +1,42 @@
 package net.contrapt.maven.service
 
-import net.contrapt.maven.model.ClasspathData
-import net.contrapt.maven.model.DependencyData
+import net.contrapt.jvmcode.model.DependencySourceData
+import net.contrapt.jvmcode.model.PathData
+import net.contrapt.maven.model.*
+import net.contrapt.maven.service.model.MavenDependencyData
+import net.contrapt.maven.service.model.MavenPathData
+import net.contrapt.maven.service.model.MavenSourceData
 import org.apache.maven.cli.MavenConnector
 import org.apache.maven.execution.MavenExecutionResult
 import java.io.File
 
 /**
- *
+ * To connect to a maven project
  */
-class MavenService(val projectDir: String, val extensionDir: String) {
+class MavenService(val request: ConnectRequest) {
 
-    val connector = MavenConnector(projectDir)
-    lateinit var result : MavenExecutionResult
+    val connector = MavenConnector(request.projectDir)
+    lateinit var mavenProject : MavenExecutionResult
         private set
+
+    val SOURCE = "Maven"
 
     /**
      * Refresh the project model
      */
-    fun refresh() {
-        result = connector.connect()
-        if (result.hasExceptions()) throw result.exceptions.first()
+    fun refresh(): Pair<ConnectResult, ProjectData> {
+        mavenProject = connector.connect()
+        val errors = mavenProject.exceptions.map { it.toString() }
+        val result = ConnectResult(getTasks(), errors)
+        val project = ProjectData(SOURCE, getDependenciesSources(), getPathData())
+        return result to project
     }
+
+    fun getDescription() = "$SOURCE ${mavenProject.project.modelVersion} (${mavenProject.project.file.absolutePath})"
 
     fun getTasks() : Collection<String> {
         val tasks = mutableSetOf<String>()
-        result.topologicallySortedProjects.forEach { project ->
+        mavenProject.topologicallySortedProjects.forEach { project ->
             project.model.build.plugins.forEach { plugin ->
                 plugin.executions.forEach { ex ->
                     if (ex.phase != null) tasks.add(ex.phase)
@@ -41,13 +52,15 @@ class MavenService(val projectDir: String, val extensionDir: String) {
     /**
      * Get dependencies
      */
-    fun getDependencies() : Collection<DependencyData> {
-        val deps = mutableMapOf<String, DependencyData>()
-        result.topologicallySortedProjects.forEach { module ->
+    fun getDependenciesSources() : Collection<DependencySourceData> {
+        val deps = mutableMapOf<String, MavenDependencyData>()
+        mavenProject.topologicallySortedProjects.forEach { module ->
             module.artifacts.forEach { art ->
                 val key = "${art.groupId}:${art.artifactId}:${art.version}:${art.classifier}"
                 if (art.file?.exists() ?: false) {
-                    val dep = deps.getOrPut(key, { DependencyData(art.file.absolutePath, null, art.groupId, art.artifactId, art.version) })
+                    val dep = deps.getOrPut(key, {
+                        MavenDependencyData(art.file.absolutePath, art.groupId, art.artifactId, art.version)
+                    })
                     dep.transitive = art.dependencyTrail.size > 2
                     dep.modules.add(module.name)
                     dep.scopes.add(art.scope)
@@ -56,23 +69,25 @@ class MavenService(val projectDir: String, val extensionDir: String) {
                 }
             }
         }
-        return deps.values
+        return listOf(MavenSourceData(SOURCE, getDescription(), deps.values))
     }
 
     /**
      * Get class source and output directories
      */
-    fun getClasspath() : Collection<ClasspathData> {
-        val classDirs = mutableSetOf<ClasspathData>()
-        result.topologicallySortedProjects.forEach { module ->
-            val cpd = ClasspathData("Maven", module.name, module.name)
-            cpd.classDirs.add(module.build.outputDirectory)
-            cpd.classDirs.add(module.build.testOutputDirectory)
-            cpd.sourceDirs.add(module.build.sourceDirectory)
-            cpd.sourceDirs.add(module.build.testSourceDirectory)
-            classDirs.add(cpd)
+    fun getPathData() : Collection<PathData> {
+        val pathDatas = mutableSetOf<MavenPathData>()
+        mavenProject.topologicallySortedProjects.forEach { module ->
+            val mainData = MavenPathData(SOURCE, "main", module.name)
+            val testData = MavenPathData(SOURCE, "test", module.name)
+            mainData.classDirs.add(module.build.outputDirectory)
+            testData.classDirs.add(module.build.testOutputDirectory)
+            mainData.sourceDirs.add(module.build.sourceDirectory)
+            testData.sourceDirs.add(module.build.testSourceDirectory)
+            pathDatas.add(mainData)
+            pathDatas.add(testData)
         }
-        return classDirs
+        return pathDatas
     }
 
     /**
