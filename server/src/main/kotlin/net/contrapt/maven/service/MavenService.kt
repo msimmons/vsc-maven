@@ -78,14 +78,8 @@ class MavenService(val request: ConnectRequest) {
     fun getPathData() : Collection<PathData> {
         val pathDatas = mutableSetOf<MavenPathData>()
         mavenProject.topologicallySortedProjects.forEach { module ->
-            val mainData = MavenPathData(SOURCE, "main", module.name)
-            val testData = MavenPathData(SOURCE, "test", module.name)
-            mainData.classDirs.add(module.build.outputDirectory)
-            testData.classDirs.add(module.build.testOutputDirectory)
-            mainData.sourceDirs.add(module.build.sourceDirectory)
-            testData.sourceDirs.add(module.build.testSourceDirectory)
-            pathDatas.add(mainData)
-            pathDatas.add(testData)
+            pathDatas.add(MavenPathData(SOURCE, "main", module.name, module.build.sourceDirectory, module.build.outputDirectory))
+            pathDatas.add(MavenPathData(SOURCE, "test", module.name, module.build.testSourceDirectory, module.build.testOutputDirectory))
         }
         return pathDatas
     }

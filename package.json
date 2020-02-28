@@ -2,7 +2,7 @@
   "name": "vsc-maven",
   "displayName": "VSC Maven",
   "description": "Maven integration for vscode",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "contrapt",
   "engines": {
     "vscode": "^1.42.0"
@@ -10,6 +10,7 @@
   "repository": {
     "url": "https://github.com/msimmons/vsc-maven"
   },
+  "icon": "resources/maven.png",
   "categories": [
     "Other"
   ],
